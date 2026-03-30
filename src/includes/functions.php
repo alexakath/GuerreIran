@@ -44,3 +44,43 @@ function requireAuth() {
     redirect('/admin/login.php');
 }
 }
+
+// CSRF helpers
+function csrf_token() {
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        $_SESSION['csrf_token_time'] = time();
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function csrf_field() {
+    $t = csrf_token();
+    return '<input type="hidden" name="csrf_token" value="' . $t . '">';
+}
+
+function verify_csrf($token) {
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    if (empty($_SESSION['csrf_token']) || empty($token)) return false;
+    return hash_equals($_SESSION['csrf_token'], $token);
+}
+
+// Security & cache headers for PHP responses (admin pages should still set no-cache)
+function send_security_headers() {
+    header('X-Frame-Options: SAMEORIGIN');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: interest-cohort=()');
+    // Admin pages: prevent caching by default
+    header('Cache-Control: no-store, no-cache, must-revalidate');
+}
+
+// Asset helper (supports optional CDN via config)
+function asset_url($path) {
+    if (defined('CDN_URL') && !empty(CDN_URL)) {
+        return rtrim(CDN_URL, '/') . '/' . ltrim($path, '/');
+    }
+    // root-relative by default
+    return '/' . ltrim($path, '/');
+}

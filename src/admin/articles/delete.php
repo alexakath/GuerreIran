@@ -4,6 +4,7 @@ require_once '../../includes/functions.php';
 
 requireAuth();
 
+// Only allow POST deletes with CSRF
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect('list.php');
 }
@@ -17,8 +18,17 @@ if (!verify_csrf($token)) {
 }
 
 if ($id > 0) {
-    $stmt = $pdo->prepare("DELETE FROM tags WHERE id = ?");
+    // fetch image to remove
+    $stmt = $pdo->prepare("SELECT image_url FROM articles WHERE id = ?");
     $stmt->execute([$id]);
+    $row = $stmt->fetch();
+    if ($row && !empty($row['image_url'])) {
+        $path = __DIR__ . '/../../' . $row['image_url'];
+        if (file_exists($path)) @unlink($path);
+    }
+
+    $del = $pdo->prepare("DELETE FROM articles WHERE id = ?");
+    $del->execute([$id]);
 }
 
 redirect('list.php');
