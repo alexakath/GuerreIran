@@ -1,9 +1,24 @@
 <?php
+require_once '../includes/db.php';
 require_once '../includes/functions.php';
 
 requireAuth();
 
 $user = isset($_SESSION['user']) ? $_SESSION['user'] : ['username' => 'Utilisateur'];
+
+// Compteurs pour dashboard (tolérance si les tables n'existent pas encore)
+$catCount = 0;
+$tagCount = 0;
+try {
+	$catCount = (int) $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn();
+} catch (PDOException $e) {
+	$catCount = 0;
+}
+try {
+	$tagCount = (int) $pdo->query("SELECT COUNT(*) FROM tags")->fetchColumn();
+} catch (PDOException $e) {
+	$tagCount = 0;
+}
 ?>
 <!doctype html>
 <html lang="fr">
@@ -45,6 +60,18 @@ $user = isset($_SESSION['user']) ? $_SESSION['user'] : ['username' => 'Utilisate
 				<h3>Utilisateurs</h3>
 				<p>Gérer les comptes et permissions.</p>
 				<a class="quick-link" href="users.php">Gérer</a>
+			</article>
+
+			<article class="card">
+				<h3>Catégories <span style="color:var(--accent-1);font-weight:700;margin-left:8px"><?php echo (int) $catCount; ?></span></h3>
+				<p>Organisez les catégories (1 article → 1 catégorie).</p>
+				<a class="quick-link" href="categories/list.php">Gérer</a>
+			</article>
+
+			<article class="card">
+				<h3>Tags <span style="color:var(--accent-1);font-weight:700;margin-left:8px"><?php echo (int) $tagCount; ?></span></h3>
+				<p>Gérer les tags (many-to-many avec les articles).</p>
+				<a class="quick-link" href="tags/list.php">Gérer</a>
 			</article>
 
 			<article class="card">
