@@ -34,12 +34,37 @@
 - branches feature/*
 
 ###  Docker (structure globale)
+
+- Dockerfile (PHP + Apache)
 - php-apache
 - mysql
-- phpmyadmin
 
  Branche :
 - `feature/docker-compose`
+
+ 1. Dockerfile (PHP + Apache)
+
+Obligatoire pour :
+
+activer mod_rewrite (SEO)
+installer extensions PHP (PDO MySQL)
+config propre
+
+Exemple logique :
+
+PHP 8.2
+Apache
+extensions :
+pdo
+pdo_mysql
+rewrite activé
+ 2. docker-compose.yml
+
+Obligatoire pour :
+
+MySQL 8
+phpMyAdmin
+liaison volumes
 
 ---
 
@@ -278,6 +303,7 @@ project/
 │
 ├── docker/
 │   ├── php/
+│   │   └── Dockerfile
 │   ├── apache/
 │   └── mysql/
 │
