@@ -16,6 +16,10 @@ function redirect($url) {
     exit;
 }
 
+function base_url($path = '') {
+    return $path;
+}
+
 // Empêcher les attaques XSS
 // Toujours utiliser e() quand on affiche du contenu utilisateur
 function e($string) {
@@ -28,4 +32,15 @@ function dd($data) {
     print_r($data);
     echo "</pre>";
     die();
+}
+
+function requireAuth() {
+
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    if ($_SESSION['user']['role'] !== 'admin') {
+    redirect('/admin/login.php');
+}
 }
