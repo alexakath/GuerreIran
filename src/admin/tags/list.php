@@ -4,6 +4,8 @@ require_once '../../includes/functions.php';
 
 requireAuth();
 
+$user = isset($_SESSION['user']) ? $_SESSION['user'] : ['username' => 'Utilisateur'];
+
 $stmt = $pdo->query("SELECT * FROM tags ORDER BY id DESC");
 $tags = $stmt->fetchAll();
 ?>
@@ -13,47 +15,52 @@ $tags = $stmt->fetchAll();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tags — Admin</title>
-    <link rel="stylesheet" href="../../assets/css/admin.css">
-    <link rel="preload" href="../../assets/css/admin.css" as="style">
+    <link rel="preload" href="/assets/css/admin.min.css" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/assets/css/admin.min.css"></noscript>
 </head>
 <body>
-    <header class="header">
-        <div class="brand">
-            <div class="logo" aria-hidden="true"></div>
-            <div>
-                <strong>Administration</strong>
-                <div class="subtitle" style="color:var(--muted);font-size:.9rem">Gestion des tags</div>
-            </div>
-        </div>
-        <div class="actions">
-            <a class="logout" href="../dashboard.php">Retour</a>
-        </div>
-    </header>
+    <div class="admin-shell">
+        <?php require_once __DIR__ . '/../_nav.php'; ?>
 
-    <main class="container">
-        <section class="card">
-            <h2>Tags</h2>
-            <a class="quick-link" href="create.php">+ Ajouter un tag</a>
+        <div class="main">
+            <header class="topbar">
+                <div class="left"><div class="page-title">Tags</div></div>
+                <div class="actions">
+                    <div class="user">Bonjour, <?php echo e($user['username']); ?></div>
+                    <a class="logout" href="../dashboard.php">Retour</a>
+                </div>
+            </header>
 
-            <?php if (empty($tags)): ?>
-                <p class="small">Aucun tag pour le moment.</p>
-            <?php else: ?>
-                <ul style="margin-top:12px;list-style:none;padding:0;">
-                    <?php foreach ($tags as $tag): ?>
-                        <li style="padding:8px 0;border-bottom:1px solid var(--input-border);display:flex;justify-content:space-between;align-items:center">
-                            <div>
-                                <strong><?php echo e($tag['name']); ?></strong>
-                                <div style="color:var(--muted);font-size:.9rem"><?php echo e($tag['slug']); ?></div>
-                            </div>
-                            <div style="display:flex;gap:8px;align-items:center">
-                                <a href="edit.php?id=<?php echo $tag['id']; ?>">Éditer</a>
-                                <a href="delete.php?id=<?php echo $tag['id']; ?>" onclick="return confirm('Supprimer ce tag ?');" style="color:#7a1f1f">Supprimer</a>
-                            </div>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php endif; ?>
-        </section>
-    </main>
+            <main class="container">
+                <section class="card">
+                    <h2>Tags</h2>
+                    <a class="quick-link" href="create.php">+ Ajouter un tag</a>
+
+                    <?php if (empty($tags)): ?>
+                        <p class="small">Aucun tag pour le moment.</p>
+                    <?php else: ?>
+                        <ul style="margin-top:12px;list-style:none;padding:0;">
+                            <?php foreach ($tags as $tag): ?>
+                                <li style="padding:8px 0;border-bottom:1px solid var(--input-border);display:flex;justify-content:space-between;align-items:center">
+                                    <div>
+                                        <strong><?php echo e($tag['name']); ?></strong>
+                                        <div style="color:var(--muted);font-size:.9rem"><?php echo e($tag['slug']); ?></div>
+                                    </div>
+                                    <div style="display:flex;gap:8px;align-items:center">
+                                        <a class="btn btn-ghost btn-sm" href="edit.php?id=<?php echo $tag['id']; ?>">Éditer</a>
+                                        <form method="post" action="delete.php" onsubmit="return confirm('Supprimer ce tag ?');" style="display:inline">
+                                            <?php echo csrf_field(); ?>
+                                            <input type="hidden" name="id" value="<?php echo $tag['id']; ?>">
+                                            <button type="submit" class="btn btn-ghost btn-danger">Supprimer</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </section>
+            </main>
+        </div>
+    </div>
 </body>
 </html>

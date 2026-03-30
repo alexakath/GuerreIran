@@ -4,30 +4,37 @@ session_start();
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 
+send_security_headers();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt->execute([$email]);
-
-    $user = $stmt->fetch();
-
-    if ($user && password_verify($password, $user['password'])) {
-
-    session_regenerate_id(true);
-
-        $_SESSION['user'] = [
-            'id' => $user['id'],
-            'username' => $user['username'],
-            'role' => $user['role']
-        ];
-
-        redirect('dashboard.php');
-
+    $token = $_POST['csrf_token'] ?? '';
+    if (!verify_csrf($token)) {
+        $error = 'Requête invalide (CSRF).';
     } else {
-        $error = "Identifiants incorrects";
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+
+        $user = $stmt->fetch();
+
+        if ($user && password_verify($password, $user['password'])) {
+
+        session_regenerate_id(true);
+
+            $_SESSION['user'] = [
+                'id' => $user['id'],
+                'username' => $user['username'],
+                'role' => $user['role']
+            ];
+
+            redirect('dashboard.php');
+
+        } else {
+            $error = "Identifiants incorrects";
+        }
     }
 }
 
@@ -40,8 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Connexion - Admin</title>
-    <link rel="preload" href="../assets/css/login.css" as="style">
-    <link rel="stylesheet" href="../assets/css/login.css">
+    <link rel="preload" href="/assets/css/login.min.css" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/assets/css/login.min.css"></noscript>
 </head>
 <body>
 <main class="login-container" role="main">
@@ -54,13 +61,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
         <form method="post" novalidate>
+            <?php echo csrf_field(); ?>
             <div class="form-group">
                 <label for="email">Email</label>
-                <input id="email" name="email" type="email" value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>" required autofocus>
+                <input id="email" name="email" type="email" value="<?php echo isset($email) ? htmlspecialchars($email) : 'admin@test.com'; ?>" required autofocus>
             </div>
             <div class="form-group">
                 <label for="password">Mot de passe</label>
-                <input id="password" name="password" type="password" required>
+                <input id="password" name="password" type="password" required value="<?php echo isset($password) ? htmlspecialchars($password) : 'admin123'; ?>">
             </div>
             <button type="submit" class="btn">Se connecter</button>
             <?php if (!empty($error)): ?>
