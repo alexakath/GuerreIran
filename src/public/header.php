@@ -30,9 +30,9 @@ try {
                 <button id="navMenuToggle" class="btn btn-ghost" aria-label="Ouvrir le menu" onclick="document.getElementById('sidebarToggle').click()">☰</button>
             </li>
             <li class="nav-item"><a href="/">Home</a></li>
-            <li class="nav-item"><a href="/public/article.php">Articles |</a></li>
+            <li class="nav-item"><a href="/article/">Articles |</a></li>
             <?php foreach ($headerCategories as $hc): ?>
-                <li class="nav-item"><a href="/public/categorie.php?slug=<?php echo e($hc['slug']); ?>"><?php echo e($hc['name']); ?></a></li>
+                <li class="nav-item"><a href="/categorie/<?php echo e($hc['slug']); ?>"><?php echo e($hc['name']); ?></a></li>
             <?php endforeach; ?>
         </ul>
     </div>

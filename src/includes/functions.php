@@ -40,9 +40,9 @@ function requireAuth() {
         session_start();
     }
 
-    if ($_SESSION['user']['role'] !== 'admin') {
-    redirect('/admin/login.php');
-}
+    if (empty($_SESSION['user']) || empty($_SESSION['user']['role']) || $_SESSION['user']['role'] !== 'admin') {
+        redirect('/admin/login.php');
+    }
 }
 
 // CSRF helpers
@@ -83,4 +83,24 @@ function asset_url($path) {
     }
     // root-relative by default
     return '/' . ltrim($path, '/');
+}
+
+// Récupérer un article par slug (retourne tableau associatif ou null)
+function find_article_by_slug(PDO $pdo, $slug) {
+    if (empty($slug)) return null;
+    try {
+        $stmt = $pdo->prepare("SELECT a.*, c.name as category_name FROM articles a JOIN categories c ON a.category_id = c.id WHERE a.slug = :slug LIMIT 1");
+        $stmt->execute(['slug' => $slug]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? $row : null;
+    } catch (Exception $e) {
+        return null;
+    }
+}
+
+// Générer l'URL d'un article propre
+function article_url($slug) {
+    $slug = trim($slug);
+    if (empty($slug)) return '/public/article.php';
+    return '/article/' . ltrim($slug, '/');
 }

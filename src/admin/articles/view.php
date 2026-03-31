@@ -5,13 +5,28 @@ require_once '../../includes/functions.php';
 requireAuth();
 send_security_headers();
 
+$slug = isset($_GET['slug']) ? $_GET['slug'] : null;
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+$article = null;
+if ($slug) {
+    // Lookup by slug using helper
+    $article = find_article_by_slug($pdo, $slug);
+    if ($article) {
+        $id = (int)$article['id'];
+    } else {
+        redirect('list.php');
+    }
+}
+
 if ($id <= 0) redirect('list.php');
 
-$stmt = $pdo->prepare("SELECT a.*, c.name AS category_name FROM articles a LEFT JOIN categories c ON a.category_id = c.id WHERE a.id = ?");
-$stmt->execute([$id]);
-$article = $stmt->fetch();
-if (!$article) redirect('list.php');
+if (!$article) {
+    $stmt = $pdo->prepare("SELECT a.*, c.name AS category_name FROM articles a LEFT JOIN categories c ON a.category_id = c.id WHERE a.id = ?");
+    $stmt->execute([$id]);
+    $article = $stmt->fetch();
+    if (!$article) redirect('list.php');
+}
 
 $tagStmt = $pdo->prepare("SELECT t.* FROM tags t JOIN article_tags at ON at.tag_id = t.id WHERE at.article_id = ? ORDER BY t.name ASC");
 $tagStmt->execute([$id]);

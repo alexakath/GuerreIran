@@ -6,14 +6,28 @@ requireAuth();
 
 $user = isset($_SESSION['user']) ? $_SESSION['user'] : ['username' => 'Utilisateur'];
 
+$slug = isset($_GET['slug']) ? $_GET['slug'] : null;
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 send_security_headers();
+
+$article = null;
+if ($slug) {
+    $article = find_article_by_slug($pdo, $slug);
+    if ($article) {
+        $id = (int)$article['id'];
+    } else {
+        redirect('list.php');
+    }
+}
+
 if ($id <= 0) redirect('list.php');
 
-$stmt = $pdo->prepare("SELECT * FROM articles WHERE id = ?");
-$stmt->execute([$id]);
-$article = $stmt->fetch();
-if (!$article) redirect('list.php');
+if (!$article) {
+    $stmt = $pdo->prepare("SELECT * FROM articles WHERE id = ?");
+    $stmt->execute([$id]);
+    $article = $stmt->fetch();
+    if (!$article) redirect('list.php');
+}
 
 $catsStmt = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC");
 $categories = $catsStmt->fetchAll();
