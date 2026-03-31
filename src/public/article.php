@@ -4,19 +4,11 @@ require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/db.php';
 
 $slug = isset($_GET['slug']) ? $_GET['slug'] : null;
-// search query
-$q = isset($_GET['q']) ? trim($_GET['q']) : null;
 
-// Récupérer l'article par slug
+// Récupérer l'article par slug via helper
 $article = null;
 if ($slug) {
-    try {
-        $stmt = $pdo->prepare("SELECT a.*, c.name as category_name FROM articles a JOIN categories c ON a.category_id = c.id WHERE a.slug = :slug LIMIT 1");
-        $stmt->execute(['slug' => $slug]);
-        $article = $stmt->fetch();
-    } catch (Exception $e) {
-        $article = null;
-    }
+    $article = find_article_by_slug($pdo, $slug);
 }
 
 ?><!doctype html>
@@ -29,44 +21,24 @@ if ($slug) {
 </head>
 <body>
     <?php include __DIR__ . '/header.php'; ?>
-    <?php include __DIR__ . '/sidebar.php'; ?>
 
     <main class="container articles-page">
         <?php if (!$slug):
-            // If a search query is provided, filter by title/content/tags
-            if ($q) {
-                $searchParam = '%' . $q . '%';
-                try {
-                    $stmt = $pdo->prepare("SELECT DISTINCT a.slug,a.title,a.created_at,c.name as category_name,LEFT(a.content,250) as excerpt
-                        FROM articles a
-                        JOIN categories c ON a.category_id = c.id
-                        LEFT JOIN article_tags at ON a.id = at.article_id
-                        LEFT JOIN tags t ON at.tag_id = t.id
-                        WHERE a.title LIKE :q OR a.content LIKE :q OR t.name LIKE :q
-                        ORDER BY a.created_at DESC
-                        LIMIT 50");
-                    $stmt->execute(['q' => $searchParam]);
-                    $articlesList = $stmt->fetchAll();
-                } catch (Exception $e) {
-                    $articlesList = [];
-                }
-            } else {
-                // Afficher la liste des derniers articles (styled like articletsizy)
-                try {
-                    $listStmt = $pdo->query("SELECT a.slug,a.title,a.created_at,c.name as category_name,LEFT(a.content,250) as excerpt FROM articles a JOIN categories c ON a.category_id = c.id ORDER BY a.created_at DESC LIMIT 12");
-                    $articlesList = $listStmt->fetchAll();
-                } catch (Exception $e) {
-                    $articlesList = [];
-                }
+            // Afficher la liste des derniers articles (styled like articletsizy)
+            try {
+                $listStmt = $pdo->query("SELECT a.slug,a.title,a.created_at,c.name as category_name,LEFT(a.content,250) as excerpt FROM articles a JOIN categories c ON a.category_id = c.id ORDER BY a.created_at DESC LIMIT 12");
+                $articlesList = $listStmt->fetchAll();
+            } catch (Exception $e) {
+                $articlesList = [];
             }
         ?>
-            <h1><?php echo $q ? 'Résultats pour: ' . e($q) : 'Articles'; ?></h1>
+            <h1>Articles</h1>
             <div class="articles-list">
                 <?php foreach ($articlesList as $it): ?>
                     <article class="article-card">
                         <div class="article-thumb"></div>
                         <div class="article-body">
-                            <h3><a href="<?php echo '/public/article.php?slug=' . e($it['slug']); ?>"><?php echo e($it['title']); ?></a></h3>
+                            <h3><a href="<?php echo article_url($it['slug']); ?>"><?php echo e($it['title']); ?></a></h3>
                             <div class="meta"><?php echo e($it['category_name']); ?> • <?php echo date('d/m/Y', strtotime($it['created_at'])); ?></div>
                             <p><?php echo e(mb_substr(strip_tags($it['excerpt']), 0, 250)); ?>…</p>
                         </div>

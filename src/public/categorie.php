@@ -58,7 +58,7 @@ else {
                             <article class="article-card">
                                 <div class="article-thumb"></div>
                                 <div class="article-body">
-                                    <h3><a href="<?php echo '/public/article.php?slug=' . e($it['slug']); ?>"><?php echo e($it['title']); ?></a></h3>
+                                    <h3><a href="<?php echo article_url($it['slug']); ?>"><?php echo e($it['title']); ?></a></h3>
                                     <div class="meta"><?php echo e($category['name']); ?> • <?php echo date('d/m/Y', strtotime($it['created_at'])); ?></div>
                                     <p><?php echo e(mb_substr(strip_tags($it['excerpt'] ?? ''), 0, 250)); ?>…</p>
                                 </div>
@@ -74,7 +74,7 @@ else {
             <?php else: ?>
                 <ul>
                     <?php foreach ($categories as $cat): ?>
-                        <li><a href="/public/categorie.php?slug=<?php echo e($cat['slug']); ?>"><?php echo e($cat['name']); ?></a></li>
+                        <li><a href="/categorie/<?php echo e($cat['slug']); ?>"><?php echo e($cat['name']); ?></a></li>
                     <?php endforeach; ?>
                 </ul>
             <?php endif; ?>
