@@ -76,10 +76,10 @@ $tags = $tagStmt->fetchAll();
                             
 
                             <div class="actions">
-                                <a class="btn" href="edit.php?id=<?php echo $article['id']; ?>">Éditer</a>
-                                <form method="post" action="delete.php" onsubmit="return confirm('Supprimer cet article ?');" style="display:inline">
+                                <a class="btn" href="/admin/articles/<?php echo e($article['slug']); ?>/edit">Éditer</a>
+                                <form method="post" action="/admin/articles/<?php echo e($article['slug']); ?>/delete" onsubmit="return confirm('Supprimer cet article ?');" style="display:inline">
                                     <?php echo csrf_field(); ?>
-                                    <input type="hidden" name="id" value="<?php echo $article['id']; ?>">
+                                    <input type="hidden" name="slug" value="<?php echo e($article['slug']); ?>">
                                     <button type="submit" class="btn btn-ghost btn-danger">Supprimer</button>
                                 </form>
                                 <a class="quick-link" href="list.php">← Retour à la liste</a>
