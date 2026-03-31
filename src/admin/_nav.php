@@ -4,7 +4,7 @@ $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
 $base = (basename($scriptDir) === 'admin') ? $scriptDir : dirname($scriptDir);
 
 ?>
-<link rel="stylesheet" href="/assets/css/admin.patch.css">
+<link rel="stylesheet" href="/assets/css/admin.css">
 <aside class="sidebar" aria-label="Navigation administrateur">
     <div class="sidebar-brand"><a href="<?php echo $base; ?>/dashboard.php">NewsIran</a></div>
     <nav class="sidebar-nav" role="navigation" aria-label="Principale">
