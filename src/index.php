@@ -6,21 +6,10 @@
 	<title>NewsIran - Accueil</title>
 	<link rel="stylesheet" href="assets/css/home.css">
 </head>
-<body>
+<body class="no-hamburger">
 
-	<nav class="navbar" role="navigation" aria-label="Navigation principale">
-		<div class="container nav-content">
-			<a class="brand" href="index.php">NewsIran</a>
-			<div class="nav-actions">
-				<a class="btn btn-outline" href="admin/login.php">Se connecter</a>
-			</div>
-			<button class="hamburger" aria-label="Basculer la navigation" aria-expanded="false">
-				<span></span>
-				<span></span>
-				<span></span>
-			</button>
-		</div>
-	</nav>
+	<?php include __DIR__ . '/public/header.php'; ?>
+	<?php include __DIR__ . '/public/sidebar.php'; ?>
 
 	<main class="hero">
 		<div class="container hero-inner">
@@ -30,7 +19,7 @@
 					<p class="lead">Analyses, reportages et dossiers sur l'actualité iranienne — clairs, vérifiés et indépendants.</p>
 					<p class="about">Nous publions des articles, enquêtes et analyses pour aider nos lecteurs à comprendre les enjeux régionaux et internationaux.</p>
 					<div class="hero-cta">
-						<a class="btn btn-primary" href="articletsizy.php">Voir les articles</a>
+						<a class="btn btn-primary" href="/public/article.php">Voir les articles</a>
 						<a class="btn btn-ghost" href="#about">En savoir plus</a>
 					</div>
 				</div>
@@ -70,21 +59,7 @@
 		<p>NewsIran a pour mission de fournir des articles de qualité, des analyses approfondies et des ressources fiables sur l'actualité iranienne et la région. Notre rédaction privilégie l'indépendance et la vérification des sources.</p>
 	</section>
 
-	<footer class="site-footer">
-		<div class="container">© <?php echo date('Y'); ?> NewsIran. Tous droits réservés.</div>
-	</footer>
-
-	<script>
-		const hamb = document.querySelector('.hamburger');
-		const navActions = document.querySelector('.nav-actions');
-		if (hamb) {
-			hamb.addEventListener('click', () => {
-				const expanded = hamb.getAttribute('aria-expanded') === 'true';
-				hamb.setAttribute('aria-expanded', String(!expanded));
-				navActions.classList.toggle('open');
-			});
-		}
-	</script>
+	<?php include __DIR__ . '/public/footer.php'; ?>
 
 </body>
 </html>
