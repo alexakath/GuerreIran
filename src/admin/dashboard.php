@@ -102,7 +102,7 @@ try {
         <?php if (!$latestArticle): ?>
             <p class="small">Aucun article publié.</p>
         <?php else: ?>
-            <article class="article-card" onclick="window.location.href='articles/view.php?id=<?php echo (int)$latestArticle['id']; ?>'">
+            <article class="article-card" onclick="window.location.href='/admin/articles/<?php echo e($latestArticle['slug']); ?>'">
 
                 <div class="thumb">
                     <?php if (!empty($latestArticle['image_url'])): ?>
@@ -126,7 +126,7 @@ try {
                 </div>
 
                 <div class="actions">
-                    <a class="btn btn-ghost" href="articles/edit.php?id=<?php echo (int)$latestArticle['id']; ?>" onclick="event.stopPropagation()">Éditer</a>
+                    <a class="btn btn-ghost" href="/admin/articles/<?php echo e($latestArticle['slug']); ?>/edit" onclick="event.stopPropagation()">Éditer</a>
                 </div>
 
             </article>
@@ -142,7 +142,7 @@ try {
 
             <div class="article-grid">
                 <?php foreach ($recentArticles as $ra): ?>
-                    <article class="article-card" onclick="window.location.href='articles/view.php?id=<?php echo (int)$ra['id']; ?>'">
+                    <article class="article-card" onclick="window.location.href='/admin/articles/<?php echo e($ra['slug']); ?>'">
 
                         <div class="thumb">
                             <?php if (!empty($ra['image_url'])): ?>
@@ -164,7 +164,7 @@ try {
                         </div>
 
                         <div class="actions">
-                            <a class="btn btn-ghost" href="articles/edit.php?id=<?php echo (int)$ra['id']; ?>" onclick="event.stopPropagation()">Éditer</a>
+                            <a class="btn btn-ghost" href="/admin/articles/<?php echo e($ra['slug']); ?>/edit" onclick="event.stopPropagation()">Éditer</a>
                         </div>
 
                     </article>

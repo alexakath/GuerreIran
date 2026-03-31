@@ -167,7 +167,7 @@ $totalPages = $perPage ? (int) ceil($total / $perPage) : 1;
                         $tags = $tagsMap[$a['id']] ?? [];
                     ?>
 
-                    <article class="article-card" onclick="window.location.href='view.php?id=<?php echo $a['id']; ?>';">
+                    <article class="article-card" onclick="window.location.href='/admin/articles/<?php echo e($a['slug']); ?>';">
 
                         <div class="thumb">
                             <?php if (!empty($a['image_url'])): ?>
@@ -195,7 +195,7 @@ $totalPages = $perPage ? (int) ceil($total / $perPage) : 1;
 
                             <a 
                                 class="btn btn-ghost btn-sm" 
-                                href="edit.php?id=<?php echo $a['id']; ?>" 
+                                href="/admin/articles/<?php echo e($a['slug']); ?>/edit" 
                                 onclick="event.stopPropagation()"
                             >
                                 ✏️
@@ -203,11 +203,11 @@ $totalPages = $perPage ? (int) ceil($total / $perPage) : 1;
 
                             <form 
                                 method="post" 
-                                action="delete.php" 
+                                action="/admin/articles/<?php echo e($a['slug']); ?>/delete" 
                                 onsubmit="return confirm('Supprimer cet article ?');"
                             >
                                 <?php echo csrf_field(); ?>
-                                <input type="hidden" name="id" value="<?php echo $a['id']; ?>">
+                                <input type="hidden" name="slug" value="<?php echo e($a['slug']); ?>">
 
                                 <button 
                                     type="submit" 

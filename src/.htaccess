@@ -38,6 +38,9 @@ Options +FollowSymlinks
   # Category pretty URLs
   RewriteRule ^categorie/([_a-z0-9-]+)$ public/categorie.php?slug=$1 [L,QSA,NC]
   RewriteRule ^categorie/?$ public/categorie.php [L,QSA,NC]
+  # Admin article pretty routes
+  RewriteRule ^admin/articles/([_a-z0-9-]+)/edit$ admin/articles/edit.php?slug=$1 [L,QSA,NC]
+  RewriteRule ^admin/articles/([_a-z0-9-]+)/delete$ admin/articles/delete.php?slug=$1 [L,QSA,NC]
   RewriteRule ^admin/articles/([_a-z0-9-]+)$ admin/articles/view.php?slug=$1 [L,QSA,NC]
   RewriteRule ^pages/article-([_a-z0-9-]+)\.html$ pages/modules.php?slug=$1 [L,QSA,NC]
   RewriteRule ^(?:.*/)*[^/]*-([_a-z0-9]+)-([_a-z0-9]+)\.html$ pages/modules.php?slug=$1&idcat=$2 [L,QSA,NC]
