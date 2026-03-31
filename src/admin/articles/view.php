@@ -26,6 +26,7 @@ $tags = $tagStmt->fetchAll();
     <title>Détail article — Admin</title>
     <link rel="preload" href="/assets/css/admin.min.css" as="style" onload="this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/assets/css/admin.min.css"></noscript>
+    <link rel="stylesheet" href="/assets/css/admin.article.css">
 </head>
 <body>
     <div class="admin-shell">
@@ -35,20 +36,31 @@ $tags = $tagStmt->fetchAll();
             <?php $pageTitle = 'Détail article'; require_once __DIR__ . '/../_header.php'; ?>
 
             <main class="container">
-                <article class="article-detail">
-                    <header class="detail-header">
+                <div class="article-detail">
                         <div class="detail-main">
-                            <h1><?php echo e($article['title']); ?></h1>
+                            <div class="detail-header-row">
+                                <h1><?php echo e($article['title']); ?></h1>
+                                <div class="published">Publié: <?php echo e($article['created_at']); ?></div>
+                            </div>
+
                             <div class="slug"><?php echo e($article['slug']); ?></div>
-                            <div style="margin-top:8px;color:var(--muted)">Catégorie: <strong><?php echo e($article['category_name'] ?? '—'); ?></strong></div>
+
+                            <div style="margin-top:8px">
+                                <span class="category-badge"><?php echo e($article['category_name'] ?? '—'); ?></span>
+                            </div>
+
                             <div class="chips" style="margin-top:10px">
                                 <?php foreach ($tags as $t): ?>
                                     <span class="chip"><?php echo e($t['name']); ?></span>
                                 <?php endforeach; ?>
                             </div>
-                            <div style="color:var(--muted);margin-top:12px">Publié: <?php echo e($article['created_at']); ?></div>
 
-                            <div style="margin-top:14px;display:flex;gap:12px;align-items:center">
+                            <div class="article-content">
+                                <?php echo $article['content']; ?>
+                            </div>
+                            
+
+                            <div class="actions">
                                 <a class="btn" href="edit.php?id=<?php echo $article['id']; ?>">Éditer</a>
                                 <form method="post" action="delete.php" onsubmit="return confirm('Supprimer cet article ?');" style="display:inline">
                                     <?php echo csrf_field(); ?>
@@ -57,25 +69,34 @@ $tags = $tagStmt->fetchAll();
                                 </form>
                                 <a class="quick-link" href="list.php">← Retour à la liste</a>
                             </div>
+
+                            
                         </div>
 
-                        <aside class="detail-aside">
-                            <?php if (!empty($article['image_url'])): ?>
-                                <img src="../../<?php echo e($article['image_url']); ?>" alt="">
-                            <?php else: ?>
-                                <div style="padding:40px;text-align:center;color:var(--muted)">Pas d'image</div>
-                            <?php endif; ?>
-                        </aside>
-                    </div>
-
-                    <div class="article-content">
-                        <?php echo $article['content']; ?>
-                    </div>
-                </section>
-
-                <?php require_once __DIR__ . '/../_footer.php'; ?>
+                    <aside class="detail-aside">
+                        <?php if (!empty($article['image_url'])): ?>
+                            <img src="/<?php echo e($article['image_url']); ?>" alt="">
+                        <?php else: ?>
+                            <div class="thumb--empty">Pas d'image</div>
+                        <?php endif; ?>
+                    </aside>
+                </div>
             </main>
+
+            <?php require_once __DIR__ . '/../_footer.php'; ?>
         </div>
     </div>
+
+    <script>
+        const hamb = document.querySelector('.hamburger');
+        const navActions = document.querySelector('.nav-actions');
+        if (hamb) {
+            hamb.addEventListener('click', () => {
+                const expanded = hamb.getAttribute('aria-expanded') === 'true';
+                hamb.setAttribute('aria-expanded', String(!expanded));
+                if (navActions) navActions.classList.toggle('open');
+            });
+        }
+    </script>
 </body>
 </html>

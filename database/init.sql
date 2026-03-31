@@ -2,7 +2,7 @@
 -- docker exec -i iran_mysql mysql -u user -puserpass guerre_iran < database/init.sql
 
 -- se connecter à mysql dans docker :
--- docker exec -it iran_mysql mysql -u user -p
+-- docker exec -it iran_mysql mysql -u user -puserpass guerre_iran
 
 -- slug = URL propre
 -- Titre: Guerre en Iran aujourd’hui
