@@ -1,0 +1,46 @@
+/* Admin article view — overrides and layout optimisations */
+:root{
+  --article-aside-width:340px;
+}
+
+.article-detail{
+  display:grid;
+  grid-template-columns:1fr var(--article-aside-width);
+  gap:28px;
+  align-items:start;
+  margin-top:16px;
+}
+
+.detail-header-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:8px;
+}
+
+.detail-main h1{margin:0;font-size:1.9rem}
+.published{color:var(--muted);font-size:.95rem}
+
+.category-badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(79,140,255,0.08);color:var(--accent);font-weight:700;margin-right:8px}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:#eef2ff;color:var(--accent);padding:6px 10px;border-radius:999px;font-size:.85rem}
+
+.detail-aside img{width:100%;height:auto;display:block;border-radius:8px;object-fit:cover;max-height:480px}
+.thumb--empty{height:240px;display:flex;align-items:center;justify-content:center;color:var(--muted);background:#f8fafc;border-radius:8px}
+
+.article-content{margin-top:18px;font-size:1rem;line-height:1.9;color:var(--text)}
+
+.actions{display:flex;gap:12px;align-items:center;margin-top:14px}
+.actions .btn{margin-right:6px}
+.quick-link{margin-left:8px}
+
+/* Make images inside article content responsive */
+.article-content img{max-width:100%;height:auto;border-radius:6px}
+
+@media (max-width:900px){
+  .article-detail{grid-template-columns:1fr;}
+  .detail-aside{order:-1}
+}

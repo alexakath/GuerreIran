@@ -1,0 +1,49 @@
+# Recommended caching and compression for static assets (Apache)
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 30 days"
+  ExpiresByType application/javascript "access plus 30 days"
+  ExpiresByType text/javascript "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/webp "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|jpg|jpeg|png|webp|svg)$">
+    Header set Cache-Control "public, max-age=2592000, immutable"
+  </FilesMatch>
+</IfModule>
+
+# Gzip/Deflate compression for text-based assets
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/css application/javascript text/javascript application/json text/html text/xml text/plain
+</IfModule>
+
+# -------------------------
+# Sprint 3: URL rewriting (adapted to use slugs)
+# Rules are minimal and non-destructive: they rewrite clean URLs with slugs
+# to the existing scripts by passing `slug` (so PHP can look up the id).
+# -------------------------
+Options +FollowSymlinks
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  RewriteRule ^essai\.html$ test.html [L]
+  RewriteRule ^article/([_a-z0-9-]+)$ public/article.php?slug=$1 [L,QSA,NC]
+  # Allow article listing without slug
+  RewriteRule ^article/?$ public/article.php [L,QSA,NC]
+  # Category pretty URLs
+  RewriteRule ^categorie/([_a-z0-9-]+)$ public/categorie.php?slug=$1 [L,QSA,NC]
+  RewriteRule ^categorie/?$ public/categorie.php [L,QSA,NC]
+  # Admin article pretty routes
+  RewriteRule ^admin/articles/([_a-z0-9-]+)/edit$ admin/articles/edit.php?slug=$1 [L,QSA,NC]
+  RewriteRule ^admin/articles/([_a-z0-9-]+)/delete$ admin/articles/delete.php?slug=$1 [L,QSA,NC]
+  RewriteRule ^admin/articles/([_a-z0-9-]+)$ admin/articles/view.php?slug=$1 [L,QSA,NC]
+  RewriteRule ^pages/article-([_a-z0-9-]+)\.html$ pages/modules.php?slug=$1 [L,QSA,NC]
+  RewriteRule ^(?:.*/)*[^/]*-([_a-z0-9]+)-([_a-z0-9]+)\.html$ pages/modules.php?slug=$1&idcat=$2 [L,QSA,NC]
+  RewriteRule ^(?:.*/)*[^/]*-([_a-z0-9]+)-([_a-z0-9]+)\.php$ pages/modules.php?slug=$1&idcat=$2 [L,QSA,NC]
+
+</IfModule>

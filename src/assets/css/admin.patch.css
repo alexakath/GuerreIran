@@ -1,0 +1,22 @@
+/* Small patch file to add contextual button styles without rebuilding the minified bundle */
+:root{--danger:#c74646}
+.btn.btn-ghost{background:transparent;color:var(--text);border:1px solid transparent;padding:8px 10px;border-radius:10px;font-weight:700}
+.btn.btn-ghost:hover{background:rgba(11,37,64,0.03)}
+.btn.btn-ghost.btn-danger{color:var(--danger);border-color:rgba(199,70,70,0.06)}
+.btn.btn-ghost.btn-danger:hover{background:rgba(199,70,70,0.06)}
+
+/* Normalize button typography and small variants */
+.btn, .btn *{font-family:inherit;font-size:1rem;line-height:1.2}
+.btn-sm{padding:6px 10px;font-size:.95rem;border-radius:8px}
+.btn.btn-ghost.btn-sm{padding:6px 10px;font-size:.95rem;color:var(--text);border-radius:8px}
+
+/* Quick inline link style aligned with buttons */
+.quick-link{display:inline-flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;font-weight:700;color:var(--accent);text-decoration:none;font-size:.95rem}
+.quick-link:hover{opacity:0.95}
+
+/* small adjustments for logout / nav links */
+.logout,.logout-link{font-size:.95rem}
+
+a.btn{text-decoration:none}
+a.btn,button.btn{font-family:inherit;font-size:1rem}
+
