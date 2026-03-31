@@ -53,6 +53,11 @@ if ($slug) {
                 <article class="article-detail">
                     <h1><?php echo e($article['title']); ?></h1>
                     <div class="meta"><small class="muted"><?php echo e($article['category_name']); ?> — <?php echo date('d/m/Y', strtotime($article['created_at'])); ?></small></div>
+                    <?php if (!empty($article['image_url'])): ?>
+                        <div class="article-image">
+                            <img src="<?php echo asset_url($article['image_url']); ?>" alt="<?php echo e($article['title']); ?>">
+                        </div>
+                    <?php endif; ?>
                     <div class="content">
                         <?php echo $article['content']; ?>
                     </div>
