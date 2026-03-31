@@ -107,108 +107,154 @@ $totalPages = $perPage ? (int) ceil($total / $perPage) : 1;
     <div class="admin-shell">
         <?php require_once __DIR__ . '/../_nav.php'; ?>
 
-        <div class="main">
-            <?php $pageTitle = 'Articles'; require_once __DIR__ . '/../_header.php'; ?>
-            
+    <div class="main">
+        <?php $pageTitle = 'Articles'; require_once __DIR__ . '/../_header.php'; ?>
 
-            <main class="container">
-                
-                <header class="page-header">
-                    <div class="title">Articles</div>
-                    <div class="header-controls">
-                        <form method="get" class="search-filters">
-                            <input type="search" name="q" class="search-input" placeholder="Rechercher titre, contenu, slug ou catégorie" value="<?php echo e($q); ?>">
+        <main class="container">
 
-                            <select name="category_id" class="filter-select">
-                                <option value="0">Toutes catégories</option>
-                                <?php foreach ($categories as $c): ?>
-                                    <option value="<?php echo $c['id']; ?>" <?php echo ($categoryFilter == $c['id']) ? 'selected' : ''; ?>><?php echo e($c['name']); ?></option>
-                                <?php endforeach; ?>
-                            </select>
+            <header class="page-header">
+                <div class="title">Articles</div>
 
-                            <select name="tags[]" multiple size="3" class="tag-select">
-                                <?php foreach ($allTags as $t): ?>
-                                    <option value="<?php echo $t['id']; ?>" <?php echo in_array($t['id'], $tagFilterIds) ? 'selected' : ''; ?>><?php echo e($t['name']); ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                <div class="header-controls">
+                    <form method="get" class="search-filters">
 
-                            <button class="btn" type="submit">Filtrer</button>
-                            <?php if($q !== '' || $categoryFilter > 0 || !empty($tagFilterIds)): ?><a href="list.php" class="quick-link">Réinitialiser</a><?php endif; ?>
-                        </form>
+                        <input 
+                            type="search" 
+                            name="q" 
+                            class="search-input" 
+                            placeholder="Rechercher..." 
+                            value="<?php echo e($q); ?>"
+                        >
 
-                        <a class="btn add-btn" href="create.php">+ Ajouter un article</a>
-                    </div>
-                </header>
-
-                    <?php if (empty($articles)): ?>
-                        <p class="small">Aucun article pour le moment.</p>
-                    <?php else: ?>
-                        
-
-                        <div class="article-grid">
-                            <?php foreach ($articles as $a):
-                                $tags = isset($tagsMap[$a['id']]) ? $tagsMap[$a['id']] : [];
-                                $text = strip_tags($a['content']);
-                                $excerpt = mb_strlen($text) > 220 ? mb_substr($text,0,220) . '…' : $text;
-                            ?>
-                                <article class="article-card" onclick="window.location.href='view.php?id=<?php echo $a['id']; ?>';">
-                                    <?php if (!empty($a['image_url'])): ?>
-                                        <div class="thumb"><img src="../../<?php echo e($a['image_url']); ?>" alt=""></div>
-                                    <?php else: ?>
-                                        <div class="thumb thumb--empty">Pas d'image</div>
-                                    <?php endif; ?>
-
-                                    <div class="body">
-                                        <h3><?php echo e($a['title']); ?></h3>
-                                        <div class="slug"><?php echo e($a['slug']); ?></div>
-                                        <div class="excerpt"><?php echo e($excerpt); ?></div>
-
-                                        <div class="meta">
-                                            <div style="color:var(--muted)">Catégorie: <strong><?php echo e($a['category_name'] ?? '—'); ?></strong></div>
-                                            <div class="chips">
-                                                <?php foreach ($tags as $t): ?>
-                                                    <span class="chip"><?php echo e($t['name']); ?></span>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        </div>
-
-                                        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
-                                            <div>
-                                                <a class="btn btn-ghost btn-sm" href="edit.php?id=<?php echo $a['id']; ?>" onclick="event.stopPropagation()">Éditer</a>
-                                                <form method="post" action="delete.php" onsubmit="return confirm('Supprimer cet article ?');" style="display:inline">
-                                                    <?php echo csrf_field(); ?>
-                                                    <input type="hidden" name="id" value="<?php echo $a['id']; ?>">
-                                                    <button type="submit" onclick="event.stopPropagation()" class="btn btn-ghost btn-danger" style="margin-left:10px">Supprimer</button>
-                                                </form>
-                                            </div>
-                                            <div style="color:var(--muted);font-size:.9rem"><?php echo e($a['created_at']); ?></div>
-                                        </div>
-                                    </div>
-                                </article>
+                        <select name="category_id" class="filter-select">
+                            <option value="0">Toutes catégories</option>
+                            <?php foreach ($categories as $c): ?>
+                                <option value="<?php echo $c['id']; ?>" <?php echo ($categoryFilter == $c['id']) ? 'selected' : ''; ?>>
+                                    <?php echo e($c['name']); ?>
+                                </option>
                             <?php endforeach; ?>
+                        </select>
+
+                        <select name="tags[]" multiple class="tag-select">
+                            <?php foreach ($allTags as $t): ?>
+                                <option value="<?php echo $t['id']; ?>" <?php echo in_array($t['id'], $tagFilterIds) ? 'selected' : ''; ?>>
+                                    <?php echo e($t['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+
+                        <button class="btn" type="submit">Filtrer</button>
+
+                        <?php if($q !== '' || $categoryFilter > 0 || !empty($tagFilterIds)): ?>
+                            <a href="list.php" class="quick-link">Réinitialiser</a>
+                        <?php endif; ?>
+
+                    </form>
+
+                    <a class="btn add-btn" href="create.php">+ Ajouter</a>
+                </div>
+            </header>
+
+            <?php if (empty($articles)): ?>
+
+                <p class="small">Aucun article pour le moment.</p>
+
+            <?php else: ?>
+
+                <div class="article-grid">
+
+                    <?php foreach ($articles as $a):
+                        $tags = $tagsMap[$a['id']] ?? [];
+                    ?>
+
+                    <article class="article-card" onclick="window.location.href='view.php?id=<?php echo $a['id']; ?>';">
+
+                        <div class="thumb">
+                            <?php if (!empty($a['image_url'])): ?>
+                                <img src="/<?php echo e($a['image_url']); ?>" alt="<?php echo e($a['title']); ?>">
+                            <?php endif; ?>
                         </div>
 
-                        <?php if ($totalPages > 1): ?>
-                            <?php
-                                $baseQuery = $_GET;
-                                unset($baseQuery['page']);
-                                $baseQueryStr = http_build_query($baseQuery);
-                            ?>
-                            <nav style="margin-top:18px;text-align:center">
-                                <?php for ($p = 1; $p <= $totalPages; $p++): ?>
-                                    <?php if ($p == $page): ?>
-                                        <strong style="margin:0 6px"><?php echo $p; ?></strong>
-                                    <?php else: ?>
-                                        <a href="?<?php echo $baseQueryStr ? $baseQueryStr . '&' : ''; ?>page=<?php echo $p; ?>" style="margin:0 6px"><?php echo $p; ?></a>
-                                    <?php endif; ?>
-                                <?php endfor; ?>
-                            </nav>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                </section>
-                <?php require_once __DIR__ . '/../_footer.php'; ?>
-            </main>
-        </div>
+                        <div class="article-body">
+                            <h3><?php echo e($a['title']); ?></h3>
+
+                            <div class="slug"><?php echo e($a['slug']); ?></div>
+
+                            <div class="meta">
+                                <?php echo e($a['category_name'] ?? '—'); ?> • <?php echo e($a['created_at']); ?>
+                            </div>
+
+                            <div class="chips">
+                                <?php foreach ($tags as $t): ?>
+                                    <span class="chip"><?php echo e($t['name']); ?></span>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+
+                            <a 
+                                class="btn btn-ghost btn-sm" 
+                                href="edit.php?id=<?php echo $a['id']; ?>" 
+                                onclick="event.stopPropagation()"
+                            >
+                                ✏️
+                            </a>
+
+                            <form 
+                                method="post" 
+                                action="delete.php" 
+                                onsubmit="return confirm('Supprimer cet article ?');"
+                            >
+                                <?php echo csrf_field(); ?>
+                                <input type="hidden" name="id" value="<?php echo $a['id']; ?>">
+
+                                <button 
+                                    type="submit" 
+                                    class="btn btn-ghost btn-danger"
+                                    onclick="event.stopPropagation()"
+                                >
+                                    🗑
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </article>
+
+                    <?php endforeach; ?>
+
+                </div>
+
+                <?php if ($totalPages > 1): ?>
+                    <?php
+                        $baseQuery = $_GET;
+                        unset($baseQuery['page']);
+                        $baseQueryStr = http_build_query($baseQuery);
+                    ?>
+
+                    <nav class="pagination">
+                        <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+
+                            <?php if ($p == $page): ?>
+                                <strong><?php echo $p; ?></strong>
+                            <?php else: ?>
+                                <a href="?<?php echo $baseQueryStr ? $baseQueryStr . '&' : ''; ?>page=<?php echo $p; ?>">
+                                    <?php echo $p; ?>
+                                </a>
+                            <?php endif; ?>
+
+                        <?php endfor; ?>
+                    </nav>
+
+                <?php endif; ?>
+
+            <?php endif; ?>
+
+            <?php require_once __DIR__ . '/../_footer.php'; ?>
+
+        </main>
     </div>
+</div>
 </body>
 </html>

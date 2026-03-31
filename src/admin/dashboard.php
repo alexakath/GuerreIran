@@ -69,92 +69,113 @@ try {
 			<?php $pageTitle = 'Tableau de bord'; require_once __DIR__ . '/_header.php'; ?>
 
 			<main class="container" role="main">
-				<h1 class="visually-hidden">Tableau de bord administrateur</h1>
 
-				<section class="card latest-card" aria-labelledby="latest-title" <?php if ($latestArticle): ?> onclick="window.location.href='articles/view.php?id=<?php echo (int)$latestArticle['id']; ?>';" style="cursor:pointer" <?php endif; ?>>
-					<div class="latest-body">
-						<h2 id="latest-title">Dernier article</h2>
-						<?php if (!$latestArticle): ?>
-							<p class="small">Aucun article publié pour le moment.</p>
-						<?php else: ?>
-							<h3 style="margin-top:6px"><?php echo e($latestArticle['title']); ?></h3>
-							<div class="slug"><?php echo e($latestArticle['slug']); ?></div>
-							<div class="excerpt" style="margin-top:10px">
-								<?php
-									$text = strip_tags($latestArticle['content']);
-									$excerpt = mb_strlen($text) > 380 ? mb_substr($text,0,380) . '…' : $text;
-									echo e($excerpt);
-								?>
-							</div>
+    <!-- STATS -->
+    <section class="stat-grid">
+        <div class="stat-card">
+            <div class="value"><?php echo (int)$articleCount; ?></div>
+            <div class="label">Articles</div>
+        </div>
 
-							<div class="meta">
-								<div>Catégorie: <strong><?php echo e($latestArticle['category_name'] ?? '—'); ?></strong></div>
-								<div class="chips">
-									<?php foreach ($latestArticleTags as $t): ?>
-										<span class="chip"><?php echo e($t['name']); ?></span>
-									<?php endforeach; ?>
-								</div>
-							</div>
+        <div class="stat-card">
+            <div class="value"><?php echo (int)$catCount; ?></div>
+            <div class="label">Catégories</div>
+        </div>
 
-							<div style="margin-top:14px">
-								<a class="btn btn-ghost btn-sm" href="articles/edit.php?id=<?php echo (int)$latestArticle['id']; ?>" onclick="event.stopPropagation();">Éditer l'article</a>
-						
-							</div>
-						<?php endif; ?>
-					</div>
-					<div class="latest-thumb">
-						<?php if ($latestArticle && !empty($latestArticle['image_url'])): ?>
-							<img src="../<?php echo e($latestArticle['image_url']); ?>" alt="">
-						<?php else: ?>
-							<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted)">Aucune image</div>
-						<?php endif; ?>
-					</div>
-				</section>
+        <div class="stat-card">
+            <div class="value"><?php echo (int)$tagCount; ?></div>
+            <div class="label">Tags</div>
+        </div>
 
-				<section class="stat-grid" aria-label="Statistiques rapides">
-					<div class="stat-card">
-						<div class="value"><?php echo (int)$articleCount; ?></div>
-						<div class="label">Articles</div>
-					</div>
-					<div class="stat-card">
-						<div class="value"><?php echo (int)$catCount; ?></div>
-						<div class="label">Catégories</div>
-					</div>
-					<div class="stat-card">
-						<div class="value"><?php echo (int)$tagCount; ?></div>
-						<div class="label">Tags</div>
-					</div>
-					<div class="stat-card">
-						<div class="value"><?php echo date('Y'); ?></div>
-						<div class="label">Année</div>
-					</div>
-				</section>
+        <div class="stat-card">
+            <div class="value"><?php echo date('Y'); ?></div>
+            <div class="label">Année</div>
+        </div>
+    </section>
 
-				<?php if (!empty($recentArticles)): ?>
-					<section class="card" aria-label="Derniers articles">
-						<h3>Derniers articles</h3>
-						<div class="article-grid">
-							<?php foreach ($recentArticles as $ra): ?>
-								<article class="article-card" onclick="window.location.href='articles/view.php?id=<?php echo (int)$ra['id']; ?>';" style="cursor:pointer">
-									<?php if (!empty($ra['image_url'])): ?>
-										<div class="thumb"><img src="../<?php echo e($ra['image_url']); ?>" alt=""></div>
-									<?php else: ?>
-										<div class="thumb" style="display:flex;align-items:center;justify-content:center;color:var(--muted)">Pas d'image</div>
-									<?php endif; ?>
-									<div class="body">
-										<h4 style="margin:0"><?php echo e($ra['title']); ?></h4>
-										<div class="slug"><?php echo e($ra['slug']); ?></div>
-										<div style="margin-top:8px;color:var(--muted);font-size:.95rem"><?php echo e($ra['category_name'] ?? '—'); ?></div>
-										<div style="margin-top:10px;color:var(--muted);font-size:.9rem"><?php echo e($ra['created_at']); ?></div>
-									</div>
-								</article>
-							<?php endforeach; ?>
-						</div>
-					</section>
-				<?php endif; ?>
+    <!-- DERNIER ARTICLE -->
+    <section style="margin-top:20px;">
+        <div class="page-header">
+            <div class="title">Dernier article</div>
+        </div>
 
-				<?php require_once __DIR__ . '/_footer.php'; ?>
-			</main>
+        <?php if (!$latestArticle): ?>
+            <p class="small">Aucun article publié.</p>
+        <?php else: ?>
+            <article class="article-card" onclick="window.location.href='articles/view.php?id=<?php echo (int)$latestArticle['id']; ?>'">
+
+                <div class="thumb">
+                    <?php if (!empty($latestArticle['image_url'])): ?>
+                        <img src="../<?php echo e($latestArticle['image_url']); ?>" alt="">
+                    <?php endif; ?>
+                </div>
+
+                <div class="article-body">
+                    <h3><?php echo e($latestArticle['title']); ?></h3>
+                    <div class="slug"><?php echo e($latestArticle['slug']); ?></div>
+
+                    <div class="meta">
+                        <?php echo e($latestArticle['category_name'] ?? '—'); ?>
+                    </div>
+
+                    <div class="chips">
+                        <?php foreach ($latestArticleTags as $t): ?>
+                            <span class="chip"><?php echo e($t['name']); ?></span>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a class="btn btn-ghost" href="articles/edit.php?id=<?php echo (int)$latestArticle['id']; ?>" onclick="event.stopPropagation()">Éditer</a>
+                </div>
+
+            </article>
+        <?php endif; ?>
+    </section>
+
+    <!-- ARTICLES RÉCENTS -->
+    <?php if (!empty($recentArticles)): ?>
+        <section style="margin-top:20px;">
+            <div class="page-header">
+                <div class="title">Articles récents</div>
+            </div>
+
+            <div class="article-grid">
+                <?php foreach ($recentArticles as $ra): ?>
+                    <article class="article-card" onclick="window.location.href='articles/view.php?id=<?php echo (int)$ra['id']; ?>'">
+
+                        <div class="thumb">
+                            <?php if (!empty($ra['image_url'])): ?>
+                                <img src="../<?php echo e($ra['image_url']); ?>" alt="">
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="article-body">
+                            <h3><?php echo e($ra['title']); ?></h3>
+                            <div class="slug"><?php echo e($ra['slug']); ?></div>
+
+                            <div class="meta">
+                                <?php echo e($ra['category_name'] ?? '—'); ?>
+                            </div>
+
+                            <div class="meta">
+                                <?php echo e($ra['created_at']); ?>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <a class="btn btn-ghost" href="articles/edit.php?id=<?php echo (int)$ra['id']; ?>" onclick="event.stopPropagation()">Éditer</a>
+                        </div>
+
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </section>
+    <?php endif; ?>
+
+    <?php require_once __DIR__ . '/_footer.php'; ?>
+
+</main>
 		</div>
 	</div>
 </body>
